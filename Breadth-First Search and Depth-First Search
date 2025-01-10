@@ -1,0 +1,74 @@
+import edu.uci.ics.jung.graph.Graph;
+import edu.uci.ics.jung.graph.SparseMultigraph;
+import edu.uci.ics.jung.graph.util.EdgeType;
+import java.util.*;
+
+public class
+
+// Breadth-First Search
+    public static <V, E> void bfs(Graph<V, E> graph, V start) {
+        Set<V> identified = new HashSet<>();
+        Queue<V> queue = new LinkedList<>();
+        identified.add(start);// Step 1: Take an arbitrary start vertex, mark it identified and place it in a queue.
+        queue.add(start);
+        while (!queue.isEmpty()) {// Step 2: while the queue is not empty
+            V u = queue.poll();// Step 3: Take a vertex, u, out of the queue and visit u.
+            System.out.println("Visited: " + u);
+            for (V v : graph.getNeighbors(u)) {// Step 4: for all vertices, v, adjacent to this vertex, u
+                if (!identified.contains(v)) {// Step 5: if v has not been identified or visited
+                    identified.add(v);// Step 6: Mark it identified.
+                    queue.add(v);// Step 7: Insert vertex v into the queue.
+                }
+            }
+            // Step 8: We are now finished visiting u.
+        }
+    }
+    public static <V, E> void dfs(Graph<V, E> graph, V start) {
+        Set<V> visited = new HashSet<>();
+        List<V> discoveryOrder = new ArrayList<>();
+        List<V> finishOrder = new ArrayList<>();
+        Map<V, V> parentMap = new HashMap<>();
+        dfsRecursive(graph, start, visited, discoveryOrder, finishOrder, parentMap);
+        System.out.println("Discovery Order: " + discoveryOrder);
+        System.out.println("Finish Order: " + finishOrder);
+    }
+    private static <V, E> void dfsRecursive(Graph<V, E> graph, V current, Set<V> visited, List<V> discoveryOrder, List<V> finishOrder, Map<V, V> parentMap) {
+        visited.add(current);
+        discoveryOrder.add(current); // Step 1: Mark the current vertex, u, visited, and enter it in the discovery order list.
+        System.out.println("Visited: " + current);
+        for (V neighbor : graph.getNeighbors(current)) {// Step 2: for each vertex, v, adjacent to the current vertex, u
+            if (!visited.contains(neighbor)) { // Step 3: if v has not been visited
+                parentMap.put(neighbor, current);// Step 4: Set parent of v to u.
+                dfsRecursive(graph, neighbor, visited, discoveryOrder, finishOrder, parentMap);// Step 5: Recursively apply this algorithm starting at v.
+            }
+        }
+        finishOrder.add(current); // Step 6: Mark u finished, and enter u into the finish order list.
+    }
+
+    public static void main(String[] args) {
+        Graph<Integer, String> g = new SparseMultigraph<Integer, String>();
+        g.addVertex((Integer)1);
+        g.addVertex((Integer)2);
+        g.addVertex((Integer)3);
+        g.addVertex((Integer)4);
+        g.addEdge("Edge-A", 1, 2);
+        g.addEdge("Edge-B", 3, 4);
+        g.addEdge("Edge-c", 1, 3);
+        System.out.println("The graph g = " + g.toString());
+        dfs(g,4);
+        Graph<Integer, String> g2 = new SparseMultigraph<Integer, String>();
+        g2.addVertex((Integer)1);
+        g2.addVertex((Integer)2);
+        g2.addVertex((Integer)3);
+        g2.addVertex((Integer)4);
+        g2.addVertex((Integer)5);
+        g2.addEdge("Edge-A", 1,3);
+        g2.addEdge("Edge-B", 2,3, EdgeType.DIRECTED);
+        g2.addEdge("Edge-C", 3, 2, EdgeType.DIRECTED);
+        g2.addEdge("Edge-P", 2,3);
+        g2.addEdge("Edge-H",4,1);
+        g2.addEdge("Edge-O", 5,4);
+        bfs(g2,1);
+        System.out.println("The graph g2 = " + g2.toString());
+    }
+}
